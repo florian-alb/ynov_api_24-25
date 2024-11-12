@@ -1,21 +1,17 @@
-import express, { Request, Response } from "express";
-import dotenv from "dotenv";
-
-// configures dotenv to work in your application
-dotenv.config();
-const app = express();
+import app from "./app";
+import prisma from "./db";
 
 const PORT = process.env.PORT;
 
-app.get("/", (req: Request, res: Response) => {
-  res.status(200).send("Hello World");
-});
+prisma
+  .$connect()
+  .then(async () => {
+    console.log("Connected to the database");
 
-app
-  .listen(PORT, () => {
-    console.log("Server running at PORT: ", PORT);
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
-  .on("error", (error) => {
-    // gracefully handle error
-    throw new Error(error.message);
+  .catch((error) => {
+    console.error(error);
   });

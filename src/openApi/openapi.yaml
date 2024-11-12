@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Product API
+  version: 1.0.0
+  description: API to manage products and their collections.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /products:
+    get:
+      summary: Get all products
+      description: Retrieve a list of products, optionally sorted by a field and direction.
+      parameters:
+        - name: sortBy
+          in: query
+          description: The field to sort by (e.g., name, price, stock).
+          required: false
+          schema:
+            type: string
+            enum: [id, name, price, stock, createdAt, updatedAt]
+        - name: sortDir
+          in: query
+          description: The sorting direction.
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        "200":
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "400":
+          description: Invalid query parameters
+        "500":
+          description: Internal server error
+    post:
+      summary: Create a new product
+      description: Adds a new product to the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateInput"
+      responses:
+        "201":
+          description: Product successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Invalid input
+        "500":
+          description: Internal server error
+
+  /products/{id}:
+    get:
+      summary: Get a product by ID
+      description: Retrieve a single product by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the product to retrieve.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The requested product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Sample Product"
+        price:
+          type: number
+          format: float
+          example: 19.99
+        stock:
+          type: integer
+          example: 100
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-11-10T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-11-11T12:00:00Z"
+        collection:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "Spring Collection"
+
+    ProductCreateInput:
+      type: object
+      required:
+        - name
+        - price
+        - stock
+      properties:
+        name:
+          type: string
+          description: The name of the product
+          example: "New Product"
+        price:
+          type: number
+          format: float
+          description: The price of the product
+          example: 49.99
+        stock:
+          type: integer
+          description: The available stock of the product
+          example: 100
+        collectionId:
+          type: integer
+          description: The ID of the associated collection
+          example: 1
