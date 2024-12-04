@@ -7,58 +7,415 @@ servers:
   - url: http://localhost:3000/v1
     description: Serveur de développement
 paths:
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        "200":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      summary: Create a new user
+      requestBody:
+        description: User data to create a new user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      summary: Get a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The user details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+    patch:
+      summary: Update a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User data to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+    delete:
+      summary: Delete a user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: User deleted successfully
+
   /messages:
     get:
-      summary: Récupérer les messages
-      description: Récupère une liste de messages, avec des options de filtre par dossier, tag, ou état.
-      parameters:
-        - name: folderId
-          in: query
-          description: ID du dossier (Inbox, Sent, etc.)
-          schema:
-            type: string
-        - name: tag
-          in: query
-          description: Filtrer par tag
-          schema:
-            type: string
-        - name: followed
-          in: query
-          description: Filtrer les messages suivis
-          schema:
-            type: boolean
+      summary: Get all messages
       responses:
-        200:
-          description: Liste des messages récupérée avec succès
+        "200":
+          description: A list of messages
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Message"
-        400:
-          description: Requête invalide
-  /messages/{messageId}:
-    get:
-      summary: Récupérer les détails d’un message
-      parameters:
-        - name: messageId
-          in: path
-          required: true
-          description: ID unique du message
-          schema:
-            type: string
+    post:
+      summary: Create a new message
+      requestBody:
+        description: Message data to create a new message
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
       responses:
-        200:
-          description: Détails du message
+        "201":
+          description: Message created successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Message"
+
+  /messages/{id}:
+    get:
+      summary: Get a message by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The message details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          description: Message not found
+    patch:
+      summary: Update a message status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Message status to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [UNREAD, READ, FOLLOWED]
+      responses:
+        "200":
+          description: Message status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          description: Message not found
+  
+  /folders:
+    get:
+      summary: Retrieve all user folders
+      description: Fetches all folders associated with the logged-in user.
+      responses:
+        200:
+          description: Successfully retrieved the folders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+    post:
+      summary: Create a new folder
+      description: Allows a user to create a new folder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderInput'
+      responses:
+        201:
+          description: Successfully created the folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+ 
+  /folders/{id}:
+    get:
+      summary: Retrieve a specific folder
+      description: Fetches the details of a folder by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the folder
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the folder details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
         404:
-          description: Message introuvable
+          description: Folder not found
+    patch:
+      summary: Update an existing folder
+      description: Updates the details of a folder by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the folder
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderInput'
+      responses:
+        200:
+          description: Successfully updated the folder
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        404:
+          description: Folder not found
+    delete:
+      summary: Delete a folder
+      description: Deletes a folder by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the folder
+          schema:
+            type: string
+      responses:
+        204:
+          description: Successfully deleted the folder
+        404:
+          description: Folder not found
+
+  /signatures:
+    get:
+      summary: Retrieve all user signatures
+      description: Fetches all signatures associated with the logged-in user.
+      responses:
+        200:
+          description: Successfully retrieved the list of signatures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Signature'
+    post:
+      summary: Create a new signature
+      description: Allows a user to create a new signature.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureInput'
+      responses:
+        201:
+          description: Successfully created the signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'   
+
+  /signatures/{id}:
+    get:
+      summary: Retrieve a specific signature
+      description: Fetches the details of a signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the signature details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+        404:
+          description: Signature not found
+     patch:
+      summary: Update an existing signature
+      description: Updates the content of a signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureInput'
+      responses:
+        200:
+          description: Successfully updated the signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+        404:
+          description: Signature not found
+    delete:
+      summary: Delete a signature
+      description: Deletes a signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      responses:
+        204:
+          description: Successfully deleted the signature
+        404:
+          description: Signature not found
+    patch:
+      summary: Update the signature
+      description: Updates the content of the signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureInput'
+      responses:
+        200:
+          description: Successfully updated the signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+        404:
+          description: Signature not found
+  
+  /signatures/me:   
+    get:
+      summary: Get the signature of the user
+      responses:
+        200:
+          description: The active signature of the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        emailAddress:
+          type: string
+          format: email
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserInput:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+          format: email
+        password:
+          type: string
+        name:
+          type: string
+      required:
+        - emailAddress
+        - password
+        - name
     Message:
       type: object
       properties:
@@ -72,11 +429,67 @@ components:
             type: string
         subject:
           type: string
-        content:
+        body:
           type: string
         status:
           type: string
-          enum: [read, unread, followed]
+          enum: [UNREAD, READ, FOLLOWED]
         createdAt:
           type: string
           format: date-time
+    MessageInput:
+      type: object
+      properties:
+        sender:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
+        subject:
+          type: string
+        body:
+          type: string
+      required:
+        - sender
+        - recipients
+        - subject
+        - body
+        Signature:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        userId:
+          type: string
+    Signature:
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        userId:
+          type: string
+    SignatureInput:
+      type: object
+      properties:
+        body:
+          type: string
+    TODO : Folder
+    Folder:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        userId:
+          type: string
+    FolderInput:
+      type: object
+      properties:
+        name:
+          type: string
