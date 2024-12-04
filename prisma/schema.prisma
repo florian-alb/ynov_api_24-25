@@ -8,24 +8,51 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid()) @db.Uuid
-  email       String    @unique
-  name        String
-  signature   Signature @relation(fields: [signatureId], references: [id])
-  signatureId String    @db.Uuid
-  Emails      Email[]
-  emailId     String    @db.Uuid
+  id           String      @id @default(uuid()) @db.Uuid
+  emailAddress String      @unique
+  password     Bytes
+  name         String
+  signatures   Signature[]
+  signatureId  String      @db.Uuid
+  messages     Message[]
+  messageId    String      @db.Uuid
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  folders      Folder[]
 }
 
 model Signature {
-  id   String @id @default(uuid()) @db.Uuid
-  User User[]
+  id     String @id @default(uuid()) @db.Uuid
+  body   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.Uuid
 }
 
-model Email {
-  id      String @id @default(uuid()) @db.Uuid
-  Author  User   @relation(fields: [userId], references: [id])
-  Subject String
-  Body    String
-  userId  String @db.Uuid
+model Message {
+  id         String        @id @default(uuid()) @db.Uuid
+  sender     String
+  recipients String[]
+  createdAt  DateTime      @default(now())
+  subject    String
+  body       String
+  User       User?         @relation(fields: [userId], references: [id])
+  userId     String?       @db.Uuid
+  folder     Folder?       @relation(fields: [folderId], references: [id])
+  folderId   String?       @db.Uuid
+  status     MessageStatus @default(UNREAD)
+}
+
+model Folder {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  userId    String    @db.Uuid
+}
+
+enum MessageStatus {
+  UNREAD
+  READ
+  FOLLOWED
 }
