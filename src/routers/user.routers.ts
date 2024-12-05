@@ -1,13 +1,13 @@
 import express from "express";
-import { getProducts, addProduct } from "../controllers/product.controller";
+import { add, get } from "../controllers/user.controller";
 
 // Create a new router
-const productsRouter = express.Router();
+const userRouter = express.Router();
 
 // Define the routes and the functions that will be executed when those routes are requested
 // The functions are imported from the controller(s)
-productsRouter.get("/", getProducts);
-productsRouter.post("/", addProduct);
+userRouter.get("/", get);
+userRouter.post("/", add);
 
 // Export the router to be used on the app
-export default productsRouter;
+export default userRouter;

@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
 //Import the routers
-import productsRouter from "./routers/product.routers";
+import userRouter from "./routers/user.routers";
 
 //Debug
 import { debugMiddleware } from "./middlewares/debug.middleware";
@@ -34,7 +34,7 @@ app.use(
 app.use(debugMiddleware);
 
 // API routers
-app.use("/products", productsRouter);
+app.use("/user", userRouter);
 
 // OpenApi validator
 app.use(openApiValidatorMiddleware);

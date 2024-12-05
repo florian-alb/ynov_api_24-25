@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { getAll, create } from "../services/products.service";
+import { getAll, create } from "../services/user.service";
 
-export const getProducts = async (req: Request, res: Response) => {
+export const get = async (req: Request, res: Response) => {
   const data = await getAll(
     req.query.sortBy as string | undefined,
     req.query.sortDir as "asc" | "desc" | undefined
@@ -12,7 +12,7 @@ export const getProducts = async (req: Request, res: Response) => {
   });
 };
 
-export const addProduct = async (req: Request, res: Response) => {
+export const add = async (req: Request, res: Response) => {
   const product = await create(req.body);
   res.status(201).json({
     success: true,
