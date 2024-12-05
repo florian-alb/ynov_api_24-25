@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Messagerie ARC MAIL API
   description: API pour Arc Mail.
@@ -165,7 +165,7 @@ paths:
                 $ref: "#/components/schemas/Message"
         "404":
           description: Message not found
-  
+
   /folders:
     get:
       summary: Retrieve all user folders
@@ -178,7 +178,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Folder'
+                  $ref: "#/components/schemas/Folder"
     post:
       summary: Create a new folder
       description: Allows a user to create a new folder.
@@ -187,15 +187,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FolderInput'
+              $ref: "#/components/schemas/FolderInput"
       responses:
         201:
           description: Successfully created the folder
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Folder'
- 
+                $ref: "#/components/schemas/Folder"
+
   /folders/{id}:
     get:
       summary: Retrieve a specific folder
@@ -213,7 +213,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Folder'
+                $ref: "#/components/schemas/Folder"
         404:
           description: Folder not found
     patch:
@@ -231,14 +231,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FolderInput'
+              $ref: "#/components/schemas/FolderInput"
       responses:
         200:
           description: Successfully updated the folder
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Folder'
+                $ref: "#/components/schemas/Folder"
         404:
           description: Folder not found
     delete:
@@ -269,7 +269,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Signature'
+                  $ref: "#/components/schemas/Signature"
     post:
       summary: Create a new signature
       description: Allows a user to create a new signature.
@@ -278,14 +278,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignatureInput'
+              $ref: "#/components/schemas/SignatureInput"
       responses:
         201:
           description: Successfully created the signature
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Signature'   
+                $ref: "#/components/schemas/Signature"
 
   /signatures/{id}:
     get:
@@ -304,10 +304,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Signature'
+                $ref: "#/components/schemas/Signature"
         404:
           description: Signature not found
-     patch:
+    patch:
       summary: Update an existing signature
       description: Updates the content of a signature by its ID.
       parameters:
@@ -322,14 +322,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignatureInput'
+              $ref: "#/components/schemas/SignatureInput"
       responses:
         200:
           description: Successfully updated the signature
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Signature'
+                $ref: "#/components/schemas/Signature"
         404:
           description: Signature not found
     delete:
@@ -347,33 +347,8 @@ paths:
           description: Successfully deleted the signature
         404:
           description: Signature not found
-    patch:
-      summary: Update the signature
-      description: Updates the content of the signature by its ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Unique ID of the signature
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignatureInput'
-      responses:
-        200:
-          description: Successfully updated the signature
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Signature'
-        404:
-          description: Signature not found
-  
-  /signatures/me:   
+
+  /signatures/me:
     get:
       summary: Get the signature of the user
       responses:
@@ -382,7 +357,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Signature'
+                $ref: "#/components/schemas/Signature"
 
 components:
   schemas:
@@ -402,6 +377,7 @@ components:
         updatedAt:
           type: string
           format: date-time
+
     UserInput:
       type: object
       properties:
@@ -416,6 +392,7 @@ components:
         - emailAddress
         - password
         - name
+
     Message:
       type: object
       properties:
@@ -437,6 +414,7 @@ components:
         createdAt:
           type: string
           format: date-time
+
     MessageInput:
       type: object
       properties:
@@ -455,15 +433,7 @@ components:
         - recipients
         - subject
         - body
-        Signature:
-      type: object
-      properties:
-        id:
-          type: string
-        body:
-          type: string
-        userId:
-          type: string
+
     Signature:
       type: object
       properties:
@@ -473,11 +443,13 @@ components:
           type: string
         userId:
           type: string
+
     SignatureInput:
       type: object
       properties:
         body:
           type: string
+
     Folder:
       type: object
       properties:
@@ -487,6 +459,7 @@ components:
           type: string
         userId:
           type: string
+
     FolderInput:
       type: object
       properties:
