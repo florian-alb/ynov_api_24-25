@@ -478,7 +478,6 @@ components:
       properties:
         body:
           type: string
-    TODO : Folder
     Folder:
       type: object
       properties:
