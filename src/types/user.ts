@@ -4,4 +4,9 @@ export type UserCreateBody = {
   emailAddress: string;
 };
 
+export type UserUpadateBody = {
+  name?: string;
+  password?: string;
+};
+
 export type UserLoginBody = Omit<UserCreateBody, "name">;

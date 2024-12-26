@@ -1,14 +1,25 @@
 import { NextFunction, Request, Response } from "express";
-import { getAll, create, login } from "../services/user.service";
+import {
+  create,
+  login,
+  deleteById,
+  getById,
+  update,
+} from "../services/user.service";
 
-export const getUsers = async (req: Request, res: Response) => {
-  const data = await getAll(
-    req.query.sortBy as string | undefined,
-    req.query.sortDir as "asc" | "desc" | undefined
-  );
+export const getUser = async (req: any, res: any) => {
+  const user = await getById(req.user.id);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
   res.json({
     success: true,
-    data,
+    data: user,
   });
 };
 
@@ -26,7 +37,7 @@ export const registerUser = async (
     return next(err);
   }
 
-  res.json({
+  res.status(201).json({
     success: true,
     data: user,
   });
@@ -50,5 +61,29 @@ export const loginUser = async (
     success: true,
     message: "Login successful",
     token: token,
+  });
+};
+
+export const deleteUser = async (req: any, res: any) => {
+  const hasBeenDeleted = await deleteById(req.user.id);
+  if (!hasBeenDeleted) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  return res.status(204).json({
+    success: true,
+    message: "User deleted",
+  });
+};
+
+export const updateUser = async (req: any, res: Response) => {
+  const updatedUser = await update(req.user.id, req.body);
+
+  res.json({
+    success: true,
+    data: updatedUser,
   });
 };

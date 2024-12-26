@@ -1,35 +1,7 @@
-import { Prisma } from "@prisma/client";
 import prisma from "../db";
-import { UserCreateBody, UserLoginBody } from "../types/user";
+import { UserCreateBody, UserLoginBody, UserUpadateBody } from "../types/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-/**
- * Returns all users, sorted by the provided field and direction
- * @param {string} sortBy - The field to sort by (optional)
- * @param {string} sortDirection - The direction to sort by (optional, default is 'ASC')
- * @returns {Array} - An array of users
- */
-export const getAll = async (
-  sortBy?: string,
-  sortDirection: "asc" | "desc" = "asc"
-) => {
-  // Define the options for the Prisma query
-  const options: Prisma.UserFindManyArgs = {
-    select: {
-      id: true,
-      name: true,
-    },
-  };
-
-  if (sortBy) {
-    options.orderBy = {
-      [sortBy]: sortDirection,
-    };
-  }
-
-  return await prisma.user.findMany(options);
-};
 
 export const create = async (data: UserCreateBody) => {
   const count = await prisma.user.count({
@@ -82,4 +54,41 @@ export const login = async (data: UserLoginBody) => {
   );
 
   return token;
+};
+
+export const getById = async (id: string) => {
+  return await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      name: true,
+      emailAddress: true,
+    },
+  });
+};
+
+export const deleteById = async (id: string) => {
+  if (await getById(id)) {
+    await prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+    return true;
+  }
+  return false;
+};
+
+export const update = async (id: string, data: UserUpadateBody) => {
+  return await prisma.user.update({
+    where: { id },
+    data,
+    select: {
+      id: true,
+      name: true,
+      emailAddress: true,
+    },
+  });
 };

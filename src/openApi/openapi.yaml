@@ -6,20 +6,56 @@ info:
 servers:
   - url: http://localhost:3000/
     description: Serveur de développement
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: "users"
+  - name: "signatures"
+
 paths:
-  /users:
-    get:
-      summary: Get all users
+  # Users
+  /user/login:
+    post:
+      tags:
+        - "users"
+      security: []
+      summary: Login a user
+      requestBody:
+        description: User data to login
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emailAddress:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - emailAddress
+                - password
       responses:
         "200":
-          description: A list of users
+          description: User logged in successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Invalid credentials
+
+  /user/register:
     post:
+      tags:
+        - "users"
+      security: []
       summary: Create a new user
       requestBody:
         description: User data to create a new user
@@ -36,15 +72,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/User"
 
-  /users/{id}:
+  /user:
     get:
-      summary: Get a user by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      summary: Get the logged-in user
+      tags:
+        - "users"
       responses:
         "200":
           description: The user details
@@ -54,21 +86,25 @@ paths:
                 $ref: "#/components/schemas/User"
         "404":
           description: User not found
-    patch:
-      summary: Update a user by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+
+    put:
+      tags:
+        - "users"
+      security:
+        - bearerAuth: []
+      summary: Update the logged-in user
       requestBody:
         description: User data to update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserInput"
+              type: object
+              properties:
+                password:
+                  type: string
+                name:
+                  type: string
       responses:
         "200":
           description: User updated successfully
@@ -76,20 +112,133 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "404":
-          description: User not found
+
     delete:
-      summary: Delete a user by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+      tags:
+        - "users"
+      security:
+        - bearerAuth: []
+      summary: Delete the logged-in user
       responses:
         "204":
           description: User deleted successfully
 
+  # Signatures
+  /signatures:
+    get:
+      tags:
+        - "signatures"
+      summary: Retrieve all user signatures
+      description: Fetches all signatures associated with the logged-in user.
+      responses:
+        200:
+          description: Successfully retrieved the list of signatures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Signature"
+    post:
+      tags:
+        - "signatures"
+      summary: Create a new signature for the logged-in user
+      description: Allows a user to create a new signature.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignatureInput"
+      responses:
+        201:
+          description: Successfully created the signature
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Signature"
+
+  /signatures/{id}:
+    get:
+      tags:
+        - "signatures"
+      summary: Retrieve a specific signature of the logged-in user by ID
+      description: Fetches the details of a signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the signature details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Signature"
+        404:
+          description: Signature not found
+    patch:
+      tags:
+        - "signatures"
+      summary: Update an existing signature of the logged-in user by ID
+      description: Updates the content of a signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignatureInput"
+      responses:
+        200:
+          description: Successfully updated the signature
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Signature"
+        404:
+          description: Signature not found
+    delete:
+      tags:
+        - "signatures"
+      summary: Delete a signature of the logged-in user by ID
+      description: Deletes a signature by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the signature
+          schema:
+            type: string
+      responses:
+        204:
+          description: Successfully deleted the signature
+        404:
+          description: Signature not found
+
+  /signatures/active:
+    get:
+      tags:
+        - "signatures"
+      summary: Get the active signature of the user
+      responses:
+        200:
+          description: The active signature of the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Signature"
+
+  # Messages
   /messages:
     get:
       summary: Get all messages
@@ -257,109 +406,13 @@ paths:
         404:
           description: Folder not found
 
-  /signatures:
-    get:
-      summary: Retrieve all user signatures
-      description: Fetches all signatures associated with the logged-in user.
-      responses:
-        200:
-          description: Successfully retrieved the list of signatures
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Signature"
-    post:
-      summary: Create a new signature
-      description: Allows a user to create a new signature.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignatureInput"
-      responses:
-        201:
-          description: Successfully created the signature
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Signature"
-
-  /signatures/{id}:
-    get:
-      summary: Retrieve a specific signature
-      description: Fetches the details of a signature by its ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Unique ID of the signature
-          schema:
-            type: string
-      responses:
-        200:
-          description: Successfully retrieved the signature details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Signature"
-        404:
-          description: Signature not found
-    patch:
-      summary: Update an existing signature
-      description: Updates the content of a signature by its ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Unique ID of the signature
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignatureInput"
-      responses:
-        200:
-          description: Successfully updated the signature
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Signature"
-        404:
-          description: Signature not found
-    delete:
-      summary: Delete a signature
-      description: Deletes a signature by its ID.
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: Unique ID of the signature
-          schema:
-            type: string
-      responses:
-        204:
-          description: Successfully deleted the signature
-        404:
-          description: Signature not found
-
-  /signatures/me:
-    get:
-      summary: Get the signature of the user
-      responses:
-        200:
-          description: The active signature of the user
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Signature"
-
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     User:
       type: object
@@ -443,12 +496,16 @@ components:
           type: string
         userId:
           type: string
+        isActive:
+          type: boolean
 
     SignatureInput:
       type: object
       properties:
         body:
           type: string
+        isActive:
+          type: boolean
 
     Folder:
       type: object
