@@ -1,11 +1,17 @@
-import { NextFunction } from "express";
+import { NextFunction, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { IAuthenticatedRequest } from "../types/express";
 
-const authMiddleware = (req: any, res: any, next: NextFunction) => {
+const authMiddleware = (
+  req: IAuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   let token = req.headers?.authorization; // Get the token from the headers
 
   if (!token) {
-    return res.status(401).json({ message: "No token provided" });
+    res.status(401).json({ message: "No token provided" });
+    return;
   }
 
   token = token.replace("Bearer ", ""); // Remove the Bearer part from the token (it's a convention)
@@ -15,7 +21,8 @@ const authMiddleware = (req: any, res: any, next: NextFunction) => {
     // Add the user to the request object, to be used in the next controller
     req.user = decoded as JwtPayload;
   } catch {
-    return res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Invalid token" });
+    return;
   }
 
   next();

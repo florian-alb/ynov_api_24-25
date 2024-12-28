@@ -6,12 +6,13 @@ import {
   getById,
   update,
 } from "../services/user.service";
+import { IAuthenticatedRequest } from "../types/express";
 
-export const getUser = async (req: any, res: any) => {
-  const user = await getById(req.user.id);
+export const getUser = async (req: IAuthenticatedRequest, res: Response) => {
+  const user = await getById(req.user?.id);
 
   if (!user) {
-    return res.status(404).json({
+    res.status(404).json({
       success: false,
       message: "User not found",
     });
@@ -64,23 +65,23 @@ export const loginUser = async (
   });
 };
 
-export const deleteUser = async (req: any, res: any) => {
-  const hasBeenDeleted = await deleteById(req.user.id);
+export const deleteUser = async (req: IAuthenticatedRequest, res: Response) => {
+  const hasBeenDeleted = await deleteById(req.user?.id);
   if (!hasBeenDeleted) {
-    return res.status(404).json({
+    res.status(404).json({
       success: false,
       message: "User not found",
     });
   }
 
-  return res.status(204).json({
+  res.status(204).json({
     success: true,
     message: "User deleted",
   });
 };
 
-export const updateUser = async (req: any, res: Response) => {
-  const updatedUser = await update(req.user.id, req.body);
+export const updateUser = async (req: IAuthenticatedRequest, res: Response) => {
+  const updatedUser = await update(req.user?.id, req.body);
 
   res.json({
     success: true,

@@ -1,19 +1,6 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
-export type GetUserAuthInfoRequest = Request & {
-  user: JwtPayload;
-};
-
-export interface IGetUserAuthInfoRequest extends Request {
-  user: JwtPayload; // Définit la propriété `user`
+export interface IAuthenticatedRequest extends Request {
+  user?: JwtPayload; // Add the user to the request object
 }
-
-export type RequestWithBody<T> = Request & {
-  body: T;
-};
-
-export type ResponseWithData<T> = Response & {
-  success: boolean;
-  data: T;
-};

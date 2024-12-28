@@ -8,14 +8,30 @@ import {
   deleteSignature,
 } from "../controllers/signature.controller";
 import authMiddleware from "../middlewares/auth.middleware";
+import uuidValidationMiddleware from "../middlewares/validation.middleware";
 
 const signatureRouter = express.Router();
 
 signatureRouter.get("/", authMiddleware, getSignatures);
-signatureRouter.get("/active", authMiddleware, getActiveSignature);
-signatureRouter.get("/:id", authMiddleware, getSignatureById);
+signatureRouter.get("/active", getActiveSignature);
+signatureRouter.get(
+  "/:id",
+  authMiddleware,
+  uuidValidationMiddleware,
+  getSignatureById
+);
 signatureRouter.post("/", authMiddleware, addSignature);
-signatureRouter.put("/:id", authMiddleware, updateSignature);
-signatureRouter.delete("/:id", deleteSignature);
+signatureRouter.put(
+  "/:id",
+  authMiddleware,
+  uuidValidationMiddleware,
+  updateSignature
+);
+signatureRouter.delete(
+  "/:id",
+  authMiddleware,
+  uuidValidationMiddleware,
+  deleteSignature
+);
 
 export default signatureRouter;

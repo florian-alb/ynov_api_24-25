@@ -41,7 +41,7 @@ export const add = async (userId: string, data: SignatureCreateBody) => {
   }
 
   return await prisma.signature.create({
-    data,
+    data: { ...data, userId },
   });
 };
 
@@ -66,7 +66,7 @@ export const update = async (
     where: {
       id,
     },
-    data,
+    data: { ...data, userId },
   });
 };
 

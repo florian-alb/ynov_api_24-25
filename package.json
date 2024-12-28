@@ -28,6 +28,7 @@
     "express-openapi-validator": "^5.3.9",
     "jsonwebtoken": "^9.0.2",
     "swagger-ui-express": "^5.0.1",
+    "uuid": "^11.0.3",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

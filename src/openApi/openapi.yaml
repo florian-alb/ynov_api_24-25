@@ -180,7 +180,7 @@ paths:
                 $ref: "#/components/schemas/Signature"
         404:
           description: Signature not found
-    patch:
+    put:
       tags:
         - "signatures"
       summary: Update an existing signature of the logged-in user by ID
@@ -286,7 +286,7 @@ paths:
                 $ref: "#/components/schemas/Message"
         "404":
           description: Message not found
-    patch:
+    put:
       summary: Update a message status
       parameters:
         - name: id
@@ -365,7 +365,7 @@ paths:
                 $ref: "#/components/schemas/Folder"
         404:
           description: Folder not found
-    patch:
+    put:
       summary: Update an existing folder
       description: Updates the details of a folder by its ID.
       parameters:
