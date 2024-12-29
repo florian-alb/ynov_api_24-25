@@ -50,6 +50,12 @@ export const update = async (
   id: string,
   data: SignatureCreateBody
 ) => {
+  const signature = await getById(userId, id);
+
+  if (!signature) {
+    throw new Error("Signature not found");
+  }
+
   if (data.isActive) {
     await prisma.signature.updateMany({
       where: {

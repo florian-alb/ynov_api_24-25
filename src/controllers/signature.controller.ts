@@ -6,12 +6,13 @@ import {
   update,
   deleteById,
 } from "../services/signature.service";
-import { Response } from "express";
+import { RequestHandler } from "express";
 import { IAuthenticatedRequest } from "../types/express";
+import { AppError } from "../types/appError";
 
-export const getSignatures = async (
+export const getSignatures: RequestHandler = async (
   req: IAuthenticatedRequest,
-  res: Response
+  res
 ) => {
   const signatures = await getAll(req.user?.id);
   res.json({
@@ -20,17 +21,15 @@ export const getSignatures = async (
   });
 };
 
-export const getSignatureById = async (
+export const getSignatureById: RequestHandler = async (
   req: IAuthenticatedRequest,
-  res: Response
+  res,
+  next
 ) => {
   const signature = await getById(req.user?.id, req.params.id);
 
   if (!signature) {
-    res.status(404).json({
-      success: false,
-      message: "Signature not found",
-    });
+    return next(new AppError("Signature not found", 404));
   }
 
   res.json({
@@ -39,17 +38,15 @@ export const getSignatureById = async (
   });
 };
 
-export const getActiveSignature = async (
+export const getActiveSignature: RequestHandler = async (
   req: IAuthenticatedRequest,
-  res: Response
+  res,
+  next
 ) => {
   const signature = await getActive(req.user?.id);
 
   if (!signature) {
-    res.status(404).json({
-      success: false,
-      message: "Active signature not found",
-    });
+    return next(new AppError("Active signature not found", 404));
   }
 
   res.json({
@@ -58,28 +55,37 @@ export const getActiveSignature = async (
   });
 };
 
-export const addSignature = async (
+export const addSignature: RequestHandler = async (
   req: IAuthenticatedRequest,
-  res: Response
+  res,
+  next
 ) => {
   const signature = await add(req.user?.id, req.body);
+
+  if (!signature) {
+    return next(new AppError("Error while creating a new signature", 501));
+  }
+
   res.status(201).json({
     success: true,
     data: signature,
   });
 };
 
-export const updateSignature = async (
+export const updateSignature: RequestHandler = async (
   req: IAuthenticatedRequest,
-  res: Response
+  res,
+  next
 ) => {
-  const signature = await update(req.user?.id, req.params.id, req.body);
+  let signature;
 
-  if (!signature) {
-    res.status(404).json({
-      success: false,
-      message: "Signature not found",
-    });
+  try {
+    signature = await update(req.user?.id, req.params.id, req.body);
+  } catch (error) {
+    if (error instanceof Error) {
+      return next(new AppError(error.message, 404));
+    }
+    return next(new AppError("Error while updating the signature", 501));
   }
 
   res.json({
@@ -88,16 +94,14 @@ export const updateSignature = async (
   });
 };
 
-export const deleteSignature = async (
+export const deleteSignature: RequestHandler = async (
   req: IAuthenticatedRequest,
-  res: Response
+  res,
+  next
 ) => {
   const hasBeenDeleted = await deleteById(req.user?.id, req.params.id);
   if (!hasBeenDeleted) {
-    res.status(404).json({
-      success: false,
-      message: "Signature not found",
-    });
+    return next(new AppError("Signature not found", 404));
   }
 
   res.status(204).json({
