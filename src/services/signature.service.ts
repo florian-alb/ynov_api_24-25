@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { AppError } from "../types/appError";
 import { SignatureCreateBody } from "../types/signature";
 
 export const getAll = async (userId: string) => {
@@ -53,7 +54,7 @@ export const update = async (
   const signature = await getById(userId, id);
 
   if (!signature) {
-    throw new Error("Signature not found");
+    throw new AppError("Signature not found", 404);
   }
 
   if (data.isActive) {

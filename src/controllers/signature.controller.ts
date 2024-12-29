@@ -9,6 +9,7 @@ import {
 import { RequestHandler } from "express";
 import { IAuthenticatedRequest } from "../types/express";
 import { AppError } from "../types/appError";
+import { errorHandler } from "../utils/errorHandler";
 
 export const getSignatures: RequestHandler = async (
   req: IAuthenticatedRequest,
@@ -81,11 +82,8 @@ export const updateSignature: RequestHandler = async (
 
   try {
     signature = await update(req.user?.id, req.params.id, req.body);
-  } catch (error) {
-    if (error instanceof Error) {
-      return next(new AppError(error.message, 404));
-    }
-    return next(new AppError("Error while updating the signature", 501));
+  } catch (err) {
+    return next(errorHandler(err, "Error while updating the signature", 501));
   }
 
   res.json({
