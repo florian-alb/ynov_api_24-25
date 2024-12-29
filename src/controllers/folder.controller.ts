@@ -5,7 +5,7 @@ import {
   update,
   deleteById,
 } from "../services/folder.service";
-import e, { RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { IAuthenticatedRequest } from "../types/express";
 import { AppError } from "../types/appError";
 import { errorHandler } from "../utils/errorHandler";
