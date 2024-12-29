@@ -44,10 +44,12 @@ model Message {
 
 model Folder {
   id       String    @id @default(uuid()) @db.Uuid
-  name     String    @unique
+  name     String
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages Message[]
   userId   String    @db.Uuid
+
+  @@unique([userId, name])
 }
 
 enum MessageStatus {
