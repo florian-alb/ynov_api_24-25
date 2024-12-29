@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import * as OpenApiValidator from "express-openapi-validator";
@@ -12,6 +12,8 @@ import signatureRouter from "./routers/signature.router";
 //Debug
 import { debugMiddleware } from "./middlewares/debug.middleware";
 import { openApiValidatorMiddleware } from "./middlewares/openapi.middleware";
+import folderRouter from "./routers/folder.router";
+import { globalErrorHandler } from "./middlewares/error.middleware";
 import { AppError } from "./types/appError";
 
 // configures dotenv to work in your application
@@ -39,9 +41,13 @@ app.use(debugMiddleware);
 // API routers
 app.use("/user", userRouter);
 app.use("/signatures", signatureRouter);
+app.use("/folders", folderRouter);
 
 // OpenApi validator
 app.use(openApiValidatorMiddleware);
+
+// Global error handler
+app.use(globalErrorHandler);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: AppError, req: Request, res: Response, next: NextFunction) => {

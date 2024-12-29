@@ -12,7 +12,7 @@ export function debugMiddleware(
 ) {
   debug(`Incoming request: ${req.method} ${req.url}`);
 
-  debug(`Headers: ${JSON.stringify(req.headers)}`);
+  //debug(`Headers: ${JSON.stringify(req.headers)}`);
 
   next();
 }

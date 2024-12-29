@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 import {
   create,
   login,
@@ -6,16 +6,19 @@ import {
   getById,
   update,
 } from "../services/user.service";
-import { IAuthenticatedRequest } from "../types/express";
 
-export const getUser = async (req: IAuthenticatedRequest, res: Response) => {
+import { IAuthenticatedRequest } from "../types/express";
+import { AppError } from "../types/appError";
+
+export const getUser: RequestHandler = async (
+  req: IAuthenticatedRequest,
+  res,
+  next
+) => {
   const user = await getById(req.user?.id);
 
   if (!user) {
-    res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
+    return next(new AppError("User not found", 404));
   }
 
   res.json({
@@ -24,18 +27,16 @@ export const getUser = async (req: IAuthenticatedRequest, res: Response) => {
   });
 };
 
-export const registerUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const registerUser: RequestHandler = async (req, res, next) => {
   const { name, emailAddress, password } = req.body;
   let user;
 
   try {
     user = await create({ name, emailAddress, password });
-  } catch (err) {
-    return next(err);
+  } catch (err: Error | AppError | unknown) {
+    if (err instanceof AppError) return next(err);
+    if (err instanceof Error) return next(new AppError(err.message, 401));
+    return next(new AppError("Error while creating a new account", 501));
   }
 
   res.status(201).json({
@@ -44,30 +45,31 @@ export const registerUser = async (
   });
 };
 
-export const loginUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const loginUser: RequestHandler = async (req, res, next) => {
   const { emailAddress, password } = req.body;
-  let token;
 
   try {
-    token = await login({ emailAddress, password });
-  } catch (err) {
-    return next(err);
-  }
+    const token = await login({ emailAddress, password });
 
-  res.json({
-    success: true,
-    message: "Login successful",
-    token: token,
-  });
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+    });
+  } catch {
+    next(new AppError("Invalid credentials", 401));
+  }
 };
 
-export const deleteUser = async (req: IAuthenticatedRequest, res: Response) => {
+export const deleteUser: RequestHandler = async (
+  req: IAuthenticatedRequest,
+  res,
+  next
+) => {
   const hasBeenDeleted = await deleteById(req.user?.id);
   if (!hasBeenDeleted) {
+    next(new AppError("User not found", 404));
+
     res.status(404).json({
       success: false,
       message: "User not found",
@@ -80,7 +82,10 @@ export const deleteUser = async (req: IAuthenticatedRequest, res: Response) => {
   });
 };
 
-export const updateUser = async (req: IAuthenticatedRequest, res: Response) => {
+export const updateUser: RequestHandler = async (
+  req: IAuthenticatedRequest,
+  res
+) => {
   const updatedUser = await update(req.user?.id, req.body);
 
   res.json({

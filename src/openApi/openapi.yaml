@@ -241,6 +241,8 @@ paths:
   # Messages
   /messages:
     get:
+      tags:
+        - "messages"
       summary: Get all messages
       responses:
         "200":
@@ -252,6 +254,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/Message"
     post:
+      tags:
+        - "messages"
       summary: Create a new message
       requestBody:
         description: Message data to create a new message
@@ -270,6 +274,8 @@ paths:
 
   /messages/{id}:
     get:
+      tags:
+        - "messages"
       summary: Get a message by ID
       parameters:
         - name: id
@@ -287,6 +293,8 @@ paths:
         "404":
           description: Message not found
     put:
+      tags:
+        - "messages"
       summary: Update a message status
       parameters:
         - name: id
@@ -315,8 +323,44 @@ paths:
         "404":
           description: Message not found
 
+  /messages/{id}/move:
+    put:
+      tags:
+        - "messages"
+      summary: Move a message to a folder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Folder name to move the message
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folderId:
+                  type: string
+      responses:
+        "200":
+          description: Message moved to the folder
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          description: Message not found
+        # "404":
+        #   description: Folder not found"
+
+  # Folders
   /folders:
     get:
+      tags:
+        - "folders"
       summary: Retrieve all user folders
       description: Fetches all folders associated with the logged-in user.
       responses:
@@ -329,6 +373,8 @@ paths:
                 items:
                   $ref: "#/components/schemas/Folder"
     post:
+      tags:
+        - "folders"
       summary: Create a new folder
       description: Allows a user to create a new folder.
       requestBody:
@@ -347,6 +393,8 @@ paths:
 
   /folders/{id}:
     get:
+      tags:
+        - "folders"
       summary: Retrieve a specific folder
       description: Fetches the details of a folder by its ID.
       parameters:
@@ -366,6 +414,8 @@ paths:
         404:
           description: Folder not found
     put:
+      tags:
+        - "folders"
       summary: Update an existing folder
       description: Updates the details of a folder by its ID.
       parameters:
@@ -390,7 +440,10 @@ paths:
                 $ref: "#/components/schemas/Folder"
         404:
           description: Folder not found
+
     delete:
+      tags:
+        - "folders"
       summary: Delete a folder
       description: Deletes a folder by its ID.
       parameters:

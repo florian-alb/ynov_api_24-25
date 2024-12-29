@@ -24,7 +24,7 @@ model Signature {
   id       String  @id @default(uuid()) @db.Uuid
   body     String
   isActive Boolean @default(false)
-  user     User    @relation(fields: [userId], references: [id])
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String  @db.Uuid
 }
 
@@ -35,7 +35,7 @@ model Message {
   createdAt  DateTime      @default(now())
   subject    String
   body       String
-  User       User?         @relation(fields: [userId], references: [id])
+  User       User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String?       @db.Uuid
   folder     Folder?       @relation(fields: [folderId], references: [id])
   folderId   String?       @db.Uuid
@@ -44,8 +44,8 @@ model Message {
 
 model Folder {
   id       String    @id @default(uuid()) @db.Uuid
-  name     String
-  user     User      @relation(fields: [userId], references: [id])
+  name     String    @unique
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages Message[]
   userId   String    @db.Uuid
 }

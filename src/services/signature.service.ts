@@ -72,7 +72,7 @@ export const update = async (
 
 export const deleteById = async (userId: string, id: string) => {
   if (await getById(userId, id)) {
-    await prisma.user.delete({
+    await prisma.signature.delete({
       where: {
         id,
       },

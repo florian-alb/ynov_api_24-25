@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { AppError } from "../types/appError";
 import { UserCreateBody, UserLoginBody, UserUpadateBody } from "../types/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -16,14 +17,35 @@ export const create = async (data: UserCreateBody) => {
     parseInt(process.env.BCRYPT_SALT_ROUNDS || "10")
   );
 
-  const user = await prisma.user.create({
-    data,
-    select: {
-      id: true,
-      emailAddress: true,
-      name: true,
-    },
-  });
+  let user;
+
+  try {
+    user = await prisma.$transaction(async (tx) => {
+      // Create a user
+      const user = await tx.user.create({
+        data,
+        select: {
+          id: true,
+          emailAddress: true,
+          name: true,
+        },
+      });
+
+      // Create default folders for the user
+      await tx.folder.createMany({
+        data: [
+          { name: "Favorites", userId: user.id },
+          { name: "Sent", userId: user.id },
+          { name: "Drafts", userId: user.id },
+          { name: "Trash", userId: user.id },
+        ],
+      });
+
+      return user;
+    });
+  } catch {
+    throw new AppError("Error while creating a new account", 501);
+  }
 
   return user;
 };
@@ -82,6 +104,13 @@ export const deleteById = async (id: string) => {
 };
 
 export const update = async (id: string, data: UserUpadateBody) => {
+  if (data.password) {
+    data.password = bcrypt.hashSync(
+      data.password,
+      parseInt(process.env.BCRYPT_SALT_ROUNDS || "10")
+    );
+  }
+
   return await prisma.user.update({
     where: { id },
     data,
