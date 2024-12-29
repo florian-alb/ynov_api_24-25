@@ -9,86 +9,78 @@ import { RequestHandler } from "express";
 import { IAuthenticatedRequest } from "../types/express";
 import { AppError } from "../types/appError";
 import { errorHandler } from "../utils/errorHandler";
+import { asyncHandler } from "../handlers/asyncHandler";
 
-export const getFolders: RequestHandler = async (
-  req: IAuthenticatedRequest,
-  res
-) => {
-  const folders = await getAll(req.user?.id);
-  res.json({
-    success: true,
-    data: folders,
-  });
-};
-
-export const getFolderById: RequestHandler = async (
-  req: IAuthenticatedRequest,
-  res,
-  next
-) => {
-  const folder = await getById(req.user?.id, req.params.id);
-
-  if (!folder) {
-    return next(new AppError("Folder not found", 404));
+export const getFolders: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res) => {
+    const folders = await getAll(req.user?.id);
+    res.json({
+      success: true,
+      data: folders,
+    });
   }
+);
 
-  res.json({
-    success: true,
-    data: folder,
-  });
-};
+export const getFolderById: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    const folder = await getById(req.user?.id, req.params.id);
 
-export const addFolder: RequestHandler = async (
-  req: IAuthenticatedRequest,
-  res,
-  next
-) => {
-  let folder;
+    if (!folder) {
+      return next(new AppError("Folder not found", 404));
+    }
 
-  try {
-    folder = await add(req.user?.id, req.body);
-  } catch (err) {
-    return next(errorHandler(err, "Error while creating a new folder", 501));
+    res.json({
+      success: true,
+      data: folder,
+    });
   }
+);
 
-  res.status(201).json({
-    success: true,
-    data: folder,
-  });
-};
+export const addFolder: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let folder;
 
-export const updateFolder: RequestHandler = async (
-  req: IAuthenticatedRequest,
-  res,
-  next
-) => {
-  let folder;
+    try {
+      folder = await add(req.user?.id, req.body);
+    } catch (err) {
+      return next(errorHandler(err, "Error while creating a new folder", 501));
+    }
 
-  try {
-    folder = await update(req.user?.id, req.params.id, req.body);
-  } catch (err) {
-    return next(errorHandler(err, "Error while updating the folder", 501));
+    res.status(201).json({
+      success: true,
+      data: folder,
+    });
   }
+);
 
-  res.json({
-    success: true,
-    data: folder,
-  });
-};
+export const updateFolder: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let folder;
 
-export const deleteFolder: RequestHandler = async (
-  req: IAuthenticatedRequest,
-  res,
-  next
-) => {
-  try {
-    await deleteById(req.user?.id, req.params.id);
-  } catch (err) {
-    return next(errorHandler(err, "Error while deleting the folder", 501));
+    try {
+      folder = await update(req.user?.id, req.params.id, req.body);
+    } catch (err) {
+      return next(errorHandler(err, "Error while updating the folder", 501));
+    }
+
+    res.json({
+      success: true,
+      data: folder,
+    });
   }
+);
 
-  res.status(204).json({
-    success: true,
-    message: "Folder deleted",
-  });
-};
+export const deleteFolder: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    try {
+      await deleteById(req.user?.id, req.params.id);
+    } catch (err) {
+      return next(errorHandler(err, "Error while deleting the folder", 501));
+    }
+
+    res.status(204).json({
+      success: true,
+      message: "Folder deleted",
+    });
+  }
+);

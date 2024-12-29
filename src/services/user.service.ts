@@ -110,7 +110,6 @@ export const update = async (id: string, data: UserUpadateBody) => {
       parseInt(process.env.BCRYPT_SALT_ROUNDS || "10")
     );
   }
-
   return await prisma.user.update({
     where: { id },
     data,
