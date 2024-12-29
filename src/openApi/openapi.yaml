@@ -390,6 +390,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Folder"
+        409:
+          description: Folder already exists
 
   /folders/{id}:
     get:
