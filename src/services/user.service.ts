@@ -10,7 +10,7 @@ export const create = async (data: UserCreateBody) => {
       emailAddress: data.emailAddress,
     },
   });
-  if (count > 0) throw new Error("Username already exists");
+  if (count > 0) throw new AppError("Username already exists", 409);
 
   data.password = bcrypt.hashSync(
     data.password,
@@ -57,10 +57,10 @@ export const login = async (data: UserLoginBody) => {
     },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) throw new AppError("Invalid credentials", 401);
 
   if (!bcrypt.compareSync(data.password, user.password))
-    throw new Error("Invalid password");
+    throw new AppError("Invalid credentials", 401);
 
   // Generate a token here
   const token = jwt.sign(

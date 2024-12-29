@@ -9,6 +9,8 @@ import {
 
 import { IAuthenticatedRequest } from "../types/express";
 import { AppError } from "../types/appError";
+import { errorHandler } from "../utils/errorHandler";
+import { asyncHandler } from "../handlers/asyncHandler";
 
 export const getUser: RequestHandler = async (
   req: IAuthenticatedRequest,
@@ -33,10 +35,8 @@ export const registerUser: RequestHandler = async (req, res, next) => {
 
   try {
     user = await create({ name, emailAddress, password });
-  } catch (err: Error | AppError | unknown) {
-    if (err instanceof AppError) return next(err);
-    if (err instanceof Error) return next(new AppError(err.message, 401));
-    return next(new AppError("Error while creating a new account", 501));
+  } catch (err) {
+    return next(errorHandler(err, "Error while creating a new account", 501));
   }
 
   res.status(201).json({
@@ -68,12 +68,7 @@ export const deleteUser: RequestHandler = async (
 ) => {
   const hasBeenDeleted = await deleteById(req.user?.id);
   if (!hasBeenDeleted) {
-    next(new AppError("User not found", 404));
-
-    res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
+    return next(new AppError("User not found", 404));
   }
 
   res.status(204).json({
@@ -82,14 +77,13 @@ export const deleteUser: RequestHandler = async (
   });
 };
 
-export const updateUser: RequestHandler = async (
-  req: IAuthenticatedRequest,
-  res
-) => {
-  const updatedUser = await update(req.user?.id, req.body);
+export const updateUser: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res) => {
+    const updatedUser = await update(req.user?.id, req.body);
 
-  res.json({
-    success: true,
-    data: updatedUser,
-  });
-};
+    res.json({
+      success: true,
+      data: updatedUser,
+    });
+  }
+);
