@@ -11,12 +11,17 @@ export const getAll = async (userId: string) => {
   });
 };
 
-export const getById = async (userId: string, id: string) => {
+export const getById = async (
+  userId: string,
+  id: string,
+  includeMessages = false
+) => {
   return await prisma.folder.findUnique({
     where: {
       id,
       userId,
     },
+    include: { messages: includeMessages },
   });
 };
 
@@ -42,7 +47,8 @@ export const add = async (userId: string, data: FolderCreateBody) => {
 export const update = async (
   userId: string,
   id: string,
-  data: FolderCreateBody
+  data: FolderCreateBody,
+  includeMessages = false
 ) => {
   let folder = await getById(userId, id);
 
@@ -56,6 +62,7 @@ export const update = async (
         id,
       },
       data: { ...data, userId },
+      include: { messages: includeMessages },
     });
   } catch (error) {
     if (

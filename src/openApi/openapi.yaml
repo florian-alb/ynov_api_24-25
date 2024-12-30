@@ -357,6 +357,8 @@ paths:
         #   description: Folder not found"
 
   # Folders
+
+  # Folders
   /folders:
     get:
       tags:
@@ -412,7 +414,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Folder"
+                $ref: "#/components/schemas/FolderWithMessages"
         404:
           description: Folder not found
     put:
@@ -439,10 +441,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Folder"
+                $ref: "#/components/schemas/FolderWithMessages"
         404:
           description: Folder not found
-
     delete:
       tags:
         - "folders"
@@ -458,6 +459,31 @@ paths:
       responses:
         204:
           description: Successfully deleted the folder
+        404:
+          description: Folder not found
+
+  /folders/{id}/messages:
+    get:
+      tags:
+        - "folders"
+      summary: Retrieve all messages of a folder
+      description: Fetches all messages associated with a folder.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique ID of the folder
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the messages of the folder
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
         404:
           description: Folder not found
 
@@ -571,6 +597,20 @@ components:
           type: string
         userId:
           type: string
+
+    FolderWithMessages:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        userId:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
 
     FolderInput:
       type: object
