@@ -542,6 +542,8 @@ components:
           type: string
         body:
           type: string
+        folderId:
+          type: string
         status:
           type: string
           enum: [UNREAD, READ, FOLLOWED]
