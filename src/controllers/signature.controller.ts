@@ -13,8 +13,15 @@ import { errorHandler } from "../utils/errorHandler";
 import { asyncHandler } from "../handlers/asyncHandler";
 
 export const getSignatures: RequestHandler = asyncHandler(
-  async (req: IAuthenticatedRequest, res) => {
-    const signatures = await getAll(req.user?.id);
+  async (req: IAuthenticatedRequest, res, next) => {
+    let signatures;
+
+    try {
+      signatures = await getAll(req.user?.id);
+    } catch (err) {
+      return next(errorHandler(err, "Error while getting the signatures", 501));
+    }
+
     res.json({
       success: true,
       data: signatures,
