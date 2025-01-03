@@ -14,6 +14,7 @@ import { debugMiddleware } from "./middlewares/debug.middleware";
 import { openApiValidatorMiddleware } from "./middlewares/openapi.middleware";
 import folderRouter from "./routers/folder.router";
 import { globalErrorHandler } from "./middlewares/error.middleware";
+import messageRouter from "./routers/message.router";
 
 // configures dotenv to work in your application
 dotenv.config();
@@ -41,6 +42,7 @@ app.use(debugMiddleware);
 app.use("/user", userRouter);
 app.use("/signatures", signatureRouter);
 app.use("/folders", folderRouter);
+app.use("/messages", messageRouter);
 
 // OpenApi validator
 app.use(openApiValidatorMiddleware);

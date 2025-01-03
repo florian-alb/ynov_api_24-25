@@ -10,5 +10,4 @@ export interface MessageUpdateBody {
   recipients?: string[];
   subject?: string;
   body?: string;
-  folderId?: string;
 }

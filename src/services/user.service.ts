@@ -3,7 +3,6 @@ import { AppError } from "../types/appError";
 import { UserCreateBody, UserLoginBody, UserUpadateBody } from "../types/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
 export const create = async (data: UserCreateBody) => {
   const count = await prisma.user.count({
     where: {
@@ -20,28 +19,13 @@ export const create = async (data: UserCreateBody) => {
   let user;
 
   try {
-    user = await prisma.$transaction(async (tx) => {
-      // Create a user
-      const user = await tx.user.create({
-        data,
-        select: {
-          id: true,
-          emailAddress: true,
-          name: true,
-        },
-      });
-
-      // Create default folders for the user
-      await tx.folder.createMany({
-        data: [
-          { name: "Favorites", userId: user.id },
-          { name: "Sent", userId: user.id },
-          { name: "Drafts", userId: user.id },
-          { name: "Trash", userId: user.id },
-        ],
-      });
-
-      return user;
+    user = await prisma.user.create({
+      data,
+      select: {
+        id: true,
+        emailAddress: true,
+        name: true,
+      },
     });
   } catch {
     throw new AppError("Error while creating a new account", 501);

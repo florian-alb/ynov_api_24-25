@@ -3,33 +3,69 @@ import {
   getMessageById,
   getMessages,
   addMessage,
-  updateMessage,
+  updateMessageStatus,
   deleteMessage,
+  moveMessageToFolder,
+  toggleMessageFavorite,
+  toggleMessageTrash,
+  sendMessage,
 } from "../controllers/message.controller";
 import authMiddleware from "../middlewares/auth.middleware";
 import uuidValidationMiddleware from "../middlewares/validation.middleware";
 
-const signatureRouter = express.Router();
+const messageRouter = express.Router();
 
-signatureRouter.get("/", authMiddleware, getMessages);
-signatureRouter.get(
+messageRouter.get("/", authMiddleware, getMessages);
+
+messageRouter.get(
   "/:id",
   authMiddleware,
   uuidValidationMiddleware,
   getMessageById
 );
-signatureRouter.post("/", authMiddleware, addMessage);
-signatureRouter.put(
-  "/:id",
+
+messageRouter.post("/", authMiddleware, addMessage);
+
+messageRouter.put(
+  "/:id/status",
   authMiddleware,
   uuidValidationMiddleware,
-  updateMessage
+  updateMessageStatus
 );
-signatureRouter.delete(
+
+messageRouter.put(
+  "/:id/folder",
+  authMiddleware,
+  uuidValidationMiddleware,
+  moveMessageToFolder
+);
+
+messageRouter.put(
+  "/:id/favorite",
+  authMiddleware,
+  uuidValidationMiddleware,
+  toggleMessageFavorite
+);
+
+messageRouter.put(
+  "/:id/trash",
+  authMiddleware,
+  uuidValidationMiddleware,
+  toggleMessageTrash
+);
+
+messageRouter.put(
+  "/:id/send",
+  authMiddleware,
+  uuidValidationMiddleware,
+  sendMessage
+);
+
+messageRouter.delete(
   "/:id",
   authMiddleware,
   uuidValidationMiddleware,
   deleteMessage
 );
 
-export default signatureRouter;
+export default messageRouter;

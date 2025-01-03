@@ -6,7 +6,12 @@ import {
   deleteById,
   getAll,
   getById,
+  moveToFolder,
+  send,
+  toggleFavorite,
+  toggleTrash,
   update,
+  updateStatus,
 } from "../services/message.service";
 import { asyncHandler } from "../handlers/asyncHandler";
 import { errorHandler } from "../utils/errorHandler";
@@ -58,6 +63,25 @@ export const addMessage: RequestHandler = asyncHandler(
   }
 );
 
+export const updateMessageStatus: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let message;
+
+    try {
+      message = await updateStatus(req.user?.id, req.params.id, req.body);
+    } catch (err) {
+      return next(
+        errorHandler(err, "Error while updating the message status", 501)
+      );
+    }
+
+    res.json({
+      success: true,
+      data: message,
+    });
+  }
+);
+
 export const updateMessage: RequestHandler = asyncHandler(
   async (req: IAuthenticatedRequest, res, next) => {
     let message;
@@ -66,6 +90,80 @@ export const updateMessage: RequestHandler = asyncHandler(
       message = await update(req.user?.id, req.params.id, req.body);
     } catch (err) {
       return next(errorHandler(err, "Error while updating the message", 501));
+    }
+
+    res.json({
+      success: true,
+      data: message,
+    });
+  }
+);
+
+export const moveMessageToFolder: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let message;
+
+    try {
+      message = await moveToFolder(req.user?.id, req.params.id, req.body);
+    } catch (err) {
+      return next(
+        errorHandler(err, "Error while moving the message to a folder", 501)
+      );
+    }
+
+    res.json({
+      success: true,
+      data: message,
+    });
+  }
+);
+
+export const toggleMessageFavorite: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let message;
+
+    try {
+      message = await toggleFavorite(req.user?.id, req.params.id);
+    } catch (err) {
+      return next(
+        errorHandler(err, "Error while toggling the message favorite", 501)
+      );
+    }
+
+    res.json({
+      success: true,
+      data: message,
+    });
+  }
+);
+
+export const toggleMessageTrash: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let message;
+
+    try {
+      message = await toggleTrash(req.user?.id, req.params.id);
+    } catch (err) {
+      return next(
+        errorHandler(err, "Error while toggling the message trash", 501)
+      );
+    }
+
+    res.json({
+      success: true,
+      data: message,
+    });
+  }
+);
+
+export const sendMessage: RequestHandler = asyncHandler(
+  async (req: IAuthenticatedRequest, res, next) => {
+    let message;
+
+    try {
+      message = await send(req.user?.id, req.params.id);
+    } catch (err) {
+      return next(errorHandler(err, "Error while sending the message", 501));
     }
 
     res.json({
