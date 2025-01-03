@@ -3,13 +3,19 @@ import { AppError } from "../types/appError";
 import { UserCreateBody, UserLoginBody, UserUpadateBody } from "../types/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validateEmail } from "../utils/emailValidation";
+
 export const create = async (data: UserCreateBody) => {
+  if (!validateEmail(data.emailAddress)) {
+    throw new AppError("Invalid email address", 400);
+  }
+
   const count = await prisma.user.count({
     where: {
       emailAddress: data.emailAddress,
     },
   });
-  if (count > 0) throw new AppError("Username already exists", 409);
+  if (count > 0) throw new AppError("User already exists", 409);
 
   data.password = bcrypt.hashSync(
     data.password,

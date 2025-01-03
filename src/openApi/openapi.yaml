@@ -71,6 +71,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid email address
+        "409":
+          description: User already exists
 
   /user:
     get:
@@ -504,6 +508,11 @@ paths:
                       error:
                         type: string
                         enum: ["You are not the sender of this message"]
+                  - type: object
+                    properties:
+                      error:
+                        type: string
+                        enum: ["Invalid recipient"]
 
   # Folders
   /folders:
@@ -701,8 +710,6 @@ components:
     MessageInput:
       type: object
       properties:
-        sender:
-          type: string
         recipients:
           type: array
           items:

@@ -2,6 +2,7 @@ import { MessageCreateBody, MessageUpdateBody } from "../types/message";
 import prisma from "../db";
 import { AppError } from "../types/appError";
 import { MessageStatus } from "@prisma/client";
+import { validateEmail } from "../utils/emailValidation";
 export const getAll = async (userId: string) => {
   return await prisma.message.findMany({
     where: {
@@ -159,6 +160,13 @@ export const send = async (userId: string, id: string) => {
   if (message.recipients.length === 0) {
     throw new AppError("Message has no recipients", 400);
   }
+
+  //validate recipients
+  message.recipients.forEach((recipient) => {
+    if (!validateEmail(recipient)) {
+      throw new AppError("Invalid recipient", 400);
+    }
+  });
 
   return await prisma.message.update({
     where: { id, userId },
