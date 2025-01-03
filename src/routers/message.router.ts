@@ -9,6 +9,7 @@ import {
   toggleMessageFavorite,
   toggleMessageTrash,
   sendMessage,
+  updateMessage,
 } from "../controllers/message.controller";
 import authMiddleware from "../middlewares/auth.middleware";
 import uuidValidationMiddleware from "../middlewares/validation.middleware";
@@ -27,6 +28,13 @@ messageRouter.get(
 messageRouter.post("/", authMiddleware, addMessage);
 
 messageRouter.put(
+  "/:id",
+  authMiddleware,
+  uuidValidationMiddleware,
+  updateMessage
+);
+
+messageRouter.put(
   "/:id/status",
   authMiddleware,
   uuidValidationMiddleware,
@@ -34,7 +42,7 @@ messageRouter.put(
 );
 
 messageRouter.put(
-  "/:id/folder",
+  "/:id/move",
   authMiddleware,
   uuidValidationMiddleware,
   moveMessageToFolder
