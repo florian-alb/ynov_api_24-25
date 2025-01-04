@@ -31,7 +31,7 @@ app.use(cors()); // Cors is a middleware that allows/disallows access to the API
 app.use(
   OpenApiValidator.middleware({
     apiSpec: __dirname + "/openApi/openapi.yaml",
-    ignoreUndocumented: true,
+    ignoreUndocumented: false,
   })
 );
 
