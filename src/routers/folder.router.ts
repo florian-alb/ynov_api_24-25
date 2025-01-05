@@ -6,7 +6,6 @@ import {
   deleteFolder,
   getFolderById,
   getFolders,
-  getMessagesByFolderId,
   updateFolder,
 } from "../controllers/folder.controller";
 
@@ -31,13 +30,6 @@ folderRouter.delete(
   authMiddleware,
   uuidValidationMiddleware,
   deleteFolder
-);
-
-folderRouter.get(
-  "/:id/messages",
-  authMiddleware,
-  uuidValidationMiddleware,
-  getMessagesByFolderId
 );
 
 export default folderRouter;

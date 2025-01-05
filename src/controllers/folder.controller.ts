@@ -23,7 +23,7 @@ export const getFolders: RequestHandler = asyncHandler(
 
 export const getFolderById: RequestHandler = asyncHandler(
   async (req: IAuthenticatedRequest, res, next) => {
-    const folder = await getById(req.user?.id, req.params.id);
+    const folder = await getById(req.user?.id, req.params.id, true);
 
     if (!folder) {
       return next(new AppError("Folder not found", 404));
@@ -81,21 +81,6 @@ export const deleteFolder: RequestHandler = asyncHandler(
     res.status(204).json({
       success: true,
       message: "Folder deleted",
-    });
-  }
-);
-
-export const getMessagesByFolderId: RequestHandler = asyncHandler(
-  async (req: IAuthenticatedRequest, res, next) => {
-    const folder = await getById(req.user?.id, req.params.id, true);
-
-    if (!folder) {
-      return next(new AppError("Folder not found", 404));
-    }
-
-    res.json({
-      success: true,
-      data: folder.messages,
     });
   }
 );
