@@ -25,8 +25,8 @@ A RESTful API service for managing emails, built with Express.js and TypeScript.
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
-cd email-api
+git clone https://github.com/florian-alb/ynov_api_24-25
+cd ynov_api_24-25
 ```
 
 2. Install dependencies:
