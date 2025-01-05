@@ -34,3 +34,7 @@ npm-debug.log
 .env
 
 prisma/*.db
+
+#build and dist folders
+build
+dist
