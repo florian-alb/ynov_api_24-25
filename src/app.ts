@@ -22,7 +22,7 @@ dotenv.config();
 const app = express();
 
 // Swagger configuration
-const swaggerDocument = YAML.load(__dirname + "/openApi/openapi.yaml");
+const swaggerDocument = YAML.load(__dirname + "/documentation/openapi.yaml");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json()); // Parse incoming requests with JSON payloads
@@ -30,7 +30,7 @@ app.use(cors()); // Cors is a middleware that allows/disallows access to the API
 
 app.use(
   OpenApiValidator.middleware({
-    apiSpec: __dirname + "/openApi/openapi.yaml",
+    apiSpec: __dirname + "/documentation/openapi.yaml",
     ignoreUndocumented: false,
   })
 );
