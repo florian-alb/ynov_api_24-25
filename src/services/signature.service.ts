@@ -2,11 +2,17 @@ import prisma from "../db";
 import { AppError } from "../types/appError";
 import { SignatureCreateBody } from "../types/signature";
 
-export const getAll = async (userId: string) => {
+export const getAll = async (
+  userId: string,
+  page: number = 1,
+  limit: number = 10
+) => {
   return await prisma.signature.findMany({
     where: {
       userId,
     },
+    skip: (page - 1) * limit,
+    take: limit,
   });
 };
 

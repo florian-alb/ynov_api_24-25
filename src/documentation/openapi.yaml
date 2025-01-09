@@ -132,6 +132,17 @@ paths:
         - "signatures"
       summary: Retrieve all user signatures
       description: Fetches all signatures associated with the logged-in user.
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
       responses:
         200:
           description: Successfully retrieved the list of signatures
@@ -246,6 +257,17 @@ paths:
       tags:
         - "messages"
       summary: Get all messages
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: number
       responses:
         "200":
           description: A list of messages

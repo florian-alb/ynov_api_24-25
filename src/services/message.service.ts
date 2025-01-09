@@ -3,11 +3,17 @@ import prisma from "../db";
 import { AppError } from "../types/appError";
 import { MessageStatus } from "@prisma/client";
 import { validateEmail } from "../utils/emailValidation";
-export const getAll = async (userId: string) => {
+export const getAll = async (
+  userId: string,
+  page: number = 1,
+  limit: number = 10
+) => {
   return await prisma.message.findMany({
     where: {
       userId,
     },
+    skip: (page - 1) * limit,
+    take: limit,
   });
 };
 

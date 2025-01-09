@@ -18,10 +18,13 @@ import { errorHandler } from "../utils/errorHandler";
 
 export const getMessages: RequestHandler = asyncHandler(
   async (req: IAuthenticatedRequest, res, next) => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
     let messages;
 
     try {
-      messages = await getAll(req.user?.id);
+      messages = await getAll(req.user?.id, page, limit);
     } catch (err) {
       return next(errorHandler(err, "Error while getting the messages", 501));
     }

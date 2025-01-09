@@ -14,10 +14,13 @@ import { asyncHandler } from "../handlers/asyncHandler";
 
 export const getSignatures: RequestHandler = asyncHandler(
   async (req: IAuthenticatedRequest, res, next) => {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
     let signatures;
 
     try {
-      signatures = await getAll(req.user?.id);
+      signatures = await getAll(req.user?.id, page, limit);
     } catch (err) {
       return next(errorHandler(err, "Error while getting the signatures", 501));
     }
